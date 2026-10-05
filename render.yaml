@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: mplads-sentinel-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn backend.main:app --host 0.0.0.0 --port $PORT --workers 4"
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        value: "https://mplads-sentinel.vercel.app"
+  
+  - type: static
+    name: mplads-sentinel-frontend
+    buildCommand: "npm install && cd frontend && npm install && npm run build"
+    staticPublishPath: "./frontend/dist"
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: mplads-sentinel-api
+          property: host
