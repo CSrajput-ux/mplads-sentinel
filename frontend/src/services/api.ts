@@ -66,7 +66,9 @@ export const api = {
     q.append("mode", mode);
     if (datasetName) q.append("dataset_name", datasetName);
 
-    const uploadUrl = `${API_BASE}/api/data/upload?${q.toString()}`;
+    // Use a relative path so the Vite dev proxy (or same-origin production server)
+    // handles routing to port 8000 — avoids ERR_ALPN_NEGOTIATION_FAILED on direct connections.
+    const uploadUrl = `/api/data/upload?${q.toString()}`;
     const res = await fetch(uploadUrl, {
       method: "POST",
       body: formData,
